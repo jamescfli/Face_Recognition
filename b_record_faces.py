@@ -1,9 +1,6 @@
 __author__ = 'bsl'
 
-import os
-import cv2
-from video_camera import VideoCamera
-import frame_operations as fo
+from utils.video_camera import VideoCamera
 
 if __name__ == '__main__':
     folder = "people/" + raw_input('Person: ').lower() # input name

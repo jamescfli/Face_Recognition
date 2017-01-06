@@ -1,6 +1,6 @@
 __author__ = 'bsl'
 
-from video_camera import VideoCamera
+from utils.video_camera import VideoCamera
 
 
 if __name__ == '__main__':

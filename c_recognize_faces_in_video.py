@@ -1,12 +1,15 @@
 __author__ = 'bsl'
 
+import os
+
 import cv2
 import cv2.face
-import os
+import frame_operations as fo
 import numpy as np
 from video_camera import VideoCamera
-from face_detector import FaceDetector
-import frame_operations as fo
+
+from utils.face_detector import FaceDetector
+
 
 def collect_dataset():
     images = []
@@ -27,6 +30,16 @@ def draw_rectangle(image, coords):
         cv2.rectangle(image, (x + w_rm, y), (x + w - w_rm, y + h),
                               (150, 150, 0), 8)
 
+def draw_label(image, text, coord, conf, threshold):
+    if conf < threshold: # apply threshold
+        cv2.putText(image, text.capitalize(),
+                    coord,
+                    cv2.FONT_HERSHEY_PLAIN, 3, (66, 53, 243), 2)
+    else:
+        cv2.putText(image, "Unknown",
+                    coord,
+                    cv2.FONT_HERSHEY_PLAIN, 3, (66, 53, 243), 2)
+
 
 if __name__ == '__main__':
     cv2.startWindowThread()
@@ -46,8 +59,7 @@ if __name__ == '__main__':
 
     print "Models Trained Succesfully"
 
-
-    detector = FaceDetector(xml_path='xml/haarcascade_frontalface_alt.xml')
+    detector=FaceDetector(xml_path='xml/haarcascade_frontalface_alt.xml')
     webcam = VideoCamera()
     cv2.namedWindow("PyData Tutorial", cv2.WINDOW_AUTOSIZE)
     while True:
@@ -65,18 +77,22 @@ if __name__ == '__main__':
                     pred, conf = rec_lbph.predict(face)
                 threshold = 140
                 print "Prediction: " + labels_dic[pred].capitalize() + "\nConfidence: " + str(round(conf))
-                if conf < threshold: # apply threshold
-                    cv2.putText(frame, labels_dic[pred].capitalize(),
-                                (faces_coord[i][0], faces_coord[i][1] - 10),
-                                cv2.FONT_HERSHEY_PLAIN, 3, (66, 53, 243), 2)
-                else:
-                    cv2.putText(frame, "Unknown",
-                                (faces_coord[i][0], faces_coord[i][1]),
-                                cv2.FONT_HERSHEY_PLAIN, 3, (66, 53, 243), 2)
+                # if conf < threshold: # apply threshold
+                #     cv2.putText(frame, labels_dic[pred].capitalize(),
+                #                 (faces_coord[i][0], faces_coord[i][1] - 10),
+                #                 cv2.FONT_HERSHEY_PLAIN, 3, (66, 53, 243), 2)
+                # else:
+                #     cv2.putText(frame, "Unknown",
+                #                 (faces_coord[i][0], faces_coord[i][1]),
+                #                 cv2.FONT_HERSHEY_PLAIN, 3, (66, 53, 243), 2)
+                draw_label(frame, labels_dic[pred].capitalize(),
+                           (faces_coord[i][0], faces_coord[i][1]), conf, threshold)
             draw_rectangle(frame, faces_coord) # rectangle around face
         cv2.putText(frame, "ESC to exit", (5, frame.shape[0] - 5),
                     cv2.FONT_HERSHEY_PLAIN, 1.3, (66, 53, 243), 2, cv2.LINE_AA)
-        cv2.imshow("PyData Tutorial", frame) # live feed in external
+        cv2.putText(frame, "Laptop", (frame.shape[1] - 100, 30),
+                    cv2.FONT_HERSHEY_PLAIN, 1.3, (66, 53, 243), 2, cv2.LINE_AA)
+        cv2.imshow("Face Recognition", frame)   # live feed in external
         if cv2.waitKey(40) & 0xFF == 27:
             cv2.destroyAllWindows()
             break
