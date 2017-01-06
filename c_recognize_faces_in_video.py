@@ -56,12 +56,13 @@ if __name__ == '__main__':
         if len(faces_coord):
             faces = fo.normalize_faces(frame, faces_coord) # norm pipeline
             for i, face in enumerate(faces): # for each detected face
-                # # MinDistancePredictCollector module is not available for unknown reason
-                # collector = cv2.face.MinDistancePredictCollector()
-                # rec_lbph.predict(face, collector)
-                # conf = collector.getDist()
-                # pred = collector.getLabel()
-                pred, conf = rec_lbph.predict(face)
+                if cv2.__version__ >= "3.1.0":
+                    collector = cv2.face.StandardCollector_create()
+                    rec_lbph.predict_collect(face, collector)
+                    conf = collector.getMinDist()
+                    pred = collector.getMinLabel()
+                else:
+                    pred, conf = rec_lbph.predict(face)
                 threshold = 140
                 print "Prediction: " + labels_dic[pred].capitalize() + "\nConfidence: " + str(round(conf))
                 if conf < threshold: # apply threshold
