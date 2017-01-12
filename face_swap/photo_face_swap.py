@@ -204,19 +204,18 @@ def correct_colours(im1, im2, landmarks1):
 if __name__ == "__main__":
     # im1, landmarks1 = read_im_and_landmarks(sys.argv[1])
     # im2, landmarks2 = read_im_and_landmarks(sys.argv[2])
-    im1, landmarks1 = read_im_and_landmarks('images/my_head.png')   # head image
-    im2, landmarks2 = read_im_and_landmarks('images/1_yuzong_larger.png')   # face image
+    im1, landmarks1 = read_im_and_landmarks('images/head_lib/zhaowei_head.png')     # head image
+    im2, landmarks2 = read_im_and_landmarks('images/face_lib/yuzong_face.png')  # face image
 
     M = transformation_from_points(landmarks1[ALIGN_POINTS],
                                    landmarks2[ALIGN_POINTS])
 
     mask = get_face_mask(im2, landmarks2)
     warped_mask = warp_im(mask, M, im1.shape)
-    combined_mask = numpy.max([get_face_mask(im1, landmarks1), warped_mask],
-                              axis=0)
+    combined_mask = numpy.max([get_face_mask(im1, landmarks1), warped_mask], axis=0)
 
     warped_im2 = warp_im(im2, M, im1.shape)
-    warped_corrected_im2 = correct_colours(im1, warped_im2, landmarks1)
+    warped_corrected_im2 = correct_colours(im1, warped_im2, landmarks1)     # max = 906.11
 
     output_im = im1 * (1.0 - combined_mask) + warped_corrected_im2 * combined_mask
 
