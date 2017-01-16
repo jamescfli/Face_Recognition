@@ -166,6 +166,7 @@ def transformation_from_points(points1, points2):
                                        c2.T - (s2 / s1) * R * c1.T)),
                          numpy.matrix([0., 0., 1.])])
 
+
 def read_im_and_landmarks(fname):
     im = cv2.imread(fname, cv2.IMREAD_COLOR)
     im = cv2.resize(im, (im.shape[1] * SCALE_FACTOR,
@@ -173,6 +174,7 @@ def read_im_and_landmarks(fname):
     s = get_landmarks(im)
 
     return im, s
+
 
 def warp_im(im, M, dshape):
     output_im = numpy.zeros(dshape, dtype=im.dtype)
@@ -183,6 +185,7 @@ def warp_im(im, M, dshape):
                    borderMode=cv2.BORDER_TRANSPARENT,
                    flags=cv2.WARP_INVERSE_MAP)
     return output_im
+
 
 def correct_colours(im1, im2, landmarks1):
     blur_amount = COLOUR_CORRECT_BLUR_FRAC * numpy.linalg.norm(
@@ -197,8 +200,7 @@ def correct_colours(im1, im2, landmarks1):
     # Avoid divide-by-zero errors.
     im2_blur += (128 * (im2_blur <= 1.0)).astype(im2_blur.dtype)
 
-    return (im2.astype(numpy.float64) * im1_blur.astype(numpy.float64) /
-                                                im2_blur.astype(numpy.float64))
+    return im2.astype(numpy.float64) * im1_blur.astype(numpy.float64) / im2_blur.astype(numpy.float64)
 
 
 if __name__ == "__main__":

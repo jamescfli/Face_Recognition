@@ -18,21 +18,28 @@ face_dic = {'01': 'images/face_lib/01_WW_face.png',
             '11': 'images/face_lib/11_ZYP_face.png',
             '12': 'images/face_lib/12_LCF_face.png',
             '13': 'images/face_lib/13_LCL_face.png',
-            '14': 'images/face_lib/14_SHC_face.png'}
+            '14': 'images/face_lib/14_SHC_face.png',
+            '15': 'images/face_lib/niuniu_face.jpg',
+            '16': 'images/face_lib/bradpitt_face.jpg',
+            '17': 'images/face_lib/bradpitt_body.jpg'}
 
 # prepare face image
-im2, landmarks2 = pfs.read_im_and_landmarks(face_dic['11'])  # face image
+im2, landmarks2 = pfs.read_im_and_landmarks(face_dic['17'])  # face image
 
-# prepare save the video clips
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
-# overwrite
-filename = 'face_swap/output/output.avi'
-if os.path.isfile(filename):
-    os.remove(filename)
-out = cv2.VideoWriter(filename,     # name of the output video file
-                      fourcc,       # 4-character code of codec used to compress the frames
-                      25.0,         # fps ~ 25 frames
-                      (1280, 720))  # frame size can be changed
+flag_save_video = True
+flag_save_photo = False
+
+if flag_save_video:
+    # prepare save the video clips
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    # overwrite
+    filename = 'face_swap/output/output.avi'
+    if os.path.isfile(filename):
+        os.remove(filename)
+    out = cv2.VideoWriter(filename,     # name of the output video file
+                          fourcc,       # 4-character code of codec used to compress the frames
+                          15.0,         # fps ~ 25 frames, need to be consistent with cv2.waitKey(*)
+                          (1280, 720))  # frame size can be changed
 
 counter = 0
 while True:
@@ -69,18 +76,21 @@ while True:
                 2.5,                            # text scale from base (corresponding to screen size)
                 (30, 180, 30),                  # color - dark green
                 4,                              # thickness of text
-                cv2.LINE_AA)                    # line type
+                cv2.LINE_AA)                    # line type: Anti-Aliased
 
     # display
     cv2.imshow('Video', output_im)
     counter += 1
-    cv2.imwrite('face_swap/output/output_{:03d}.jpg'.format(counter), output_im)
-    out.write(output_im)
+    if flag_save_photo:
+        cv2.imwrite('face_swap/output/output_{:03d}.jpg'.format(counter), output_im)
+    if flag_save_video:
+        out.write(output_im)
 
-    k = cv2.waitKey(40) & 0xff  # 40ms ~25fps
+    k = cv2.waitKey(15) & 0xff  # 40ms ~25fps
     if k == ord('q'):
         break
 
 cam.release()
-out.release()
+if flag_save_video:
+    out.release()
 cv2.destroyAllWindows()
