@@ -81,11 +81,14 @@ COLOUR_CORRECT_BLUR_FRAC = 0.6
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(PREDICTOR_PATH)
 
+
 class TooManyFaces(Exception):
     pass
 
+
 class NoFaces(Exception):
     pass
+
 
 def get_landmarks(im):
     rects = detector(im, 1)
@@ -96,6 +99,7 @@ def get_landmarks(im):
         raise NoFaces
 
     return numpy.matrix([[p.x, p.y] for p in predictor(im, rects[0]).parts()])
+
 
 def annotate_landmarks(im, landmarks):
     im = im.copy()
@@ -108,9 +112,11 @@ def annotate_landmarks(im, landmarks):
         cv2.circle(im, pos, 3, color=(0, 255, 255))
     return im
 
+
 def draw_convex_hull(im, points, color):
     points = cv2.convexHull(points)
     cv2.fillConvexPoly(im, points, color=color)
+
 
 def get_face_mask(im, landmarks):
     im = numpy.zeros(im.shape[:2], dtype=numpy.float64)
@@ -126,6 +132,7 @@ def get_face_mask(im, landmarks):
     im = cv2.GaussianBlur(im, (FEATHER_AMOUNT, FEATHER_AMOUNT), 0)
 
     return im
+
 
 def transformation_from_points(points1, points2):
     """
@@ -162,8 +169,7 @@ def transformation_from_points(points1, points2):
     # left (with column vectors).
     R = (U * Vt).T
 
-    return numpy.vstack([numpy.hstack(((s2 / s1) * R,
-                                       c2.T - (s2 / s1) * R * c1.T)),
+    return numpy.vstack([numpy.hstack(((s2 / s1) * R, c2.T - (s2 / s1) * R * c1.T)),
                          numpy.matrix([0., 0., 1.])])
 
 

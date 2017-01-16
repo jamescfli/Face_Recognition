@@ -62,8 +62,8 @@ while True:
 
     output_im = im1 * (1.0 - combined_mask) + warped_corrected_im2 * combined_mask
 
-    # regularize frame
-    output_im = np.clip(output_im, 0, 255).astype('u1')
+    # regularize frame, for cv2.imshow
+    output_im = np.clip(output_im, 0, 255).astype('u1')     # u1 = uint8
 
     print output_im.shape
     print output_im.dtype   # float64 (be4 reg)
